@@ -117,32 +117,38 @@ export default function Game(props) {
     
     function generateFood(){
         let random1 = Math.floor((Math.random()*props.width) - 1)
+         console.log(random1)
         let remainder1 = random1 % props.blockSize
+        console.log(remainder1)
         random1 = random1 - remainder1
         setFoodx(random1)
         let random2 = Math.floor((Math.random()*props.height) - 1)
         let remainder2 = random2 % props.blockSize
         random2 = random2 - remainder2
+        console.log(props.width)
+        console.log(props.height)
+        console.log(random1)
+        console.log(random2)
         setFoody(random2)
     }
     
     
     return (
-        <div>
-            <div id="game-elements" ref={gameElementsRef} style={{width:`${props.width}px`, height:`calc(${props.height}px - 160px)`, border:'1px solid yellow'}}>
+        <div style={{display: `flex`, flexDirection:`column`,justifyContent:`space-around`,alignItems:`center`, height: `100%`}}>
+            <div id="game-elements" ref={gameElementsRef} style={{position:`relative`,width:`${props.width}px`, height:`calc(${props.height}px)`, margin: `0 auto`, border:'1px solid yellow', borderRadius: '4px'}}>
                 <SnakeHead frame={frame} x={posX} y={posY} snake={snake} blockSize={props.blockSize}></SnakeHead>
                 <FoodElement frame={frame} left={foodx} top={foody} blockSize={props.blockSize}></FoodElement>
-                {
+                { // tail segments
                     tailState.map((content, index)=>{
                            return( 
-                           <div style={{width:`${props.blockSize}px`, height:`${props.blockSize}px`, background:'red'}}>
+                           <div key={index} style={{position:`absolute`,width:`${props.blockSize}px`, height:`${props.blockSize}px`, background:`rgb(252, ${15+(index*10)}, ${3+(index*5)})`, top:`${content.y}px`, left:`${content.x}px`, color:`white`}}>
                                
                            </div>)
                         
                     })
                 }
             </div>
-            <div style={{height: '160px', position:'relative'}}>
+            <div style={{width: `${props.width}px`, margin:`0 auto`,display: 'flex', flexDirection:`column`,alignItems:`center`,height: '160px', position:'relative', boxSizing: 'border-box', padding: `10px`, borderRadius:`4px`, border:`1px solid cyan`}}>
                 <ArrowControls  direction={direction} changeDirection={changeDirection}></ArrowControls>
                 <ScoreView eaten={REF_EATEN.current}></ScoreView>
             </div>

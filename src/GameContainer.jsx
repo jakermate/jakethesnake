@@ -20,9 +20,13 @@ export default function GameContainer() {
     function onLoad(){
         let windowWidth = window.innerWidth
         let windowHeight = window.innerHeight
+        // set to even remainders of 20px so that grid always lines up with integer coordinates
+        windowWidth = windowWidth - (windowWidth % 40)
+        windowHeight = windowHeight - (windowHeight % 40) - 160
+        console.log(windowWidth)
         setWidth(windowWidth)
         setHeight(windowHeight)
-        let blockSize = windowWidth / 30
+        let blockSize = windowWidth / 40
         setBlockSize(blockSize)
         
     }
