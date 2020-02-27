@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/jakethesnake/static/css/main.20a8ce4e.chunk.css",
-    "main.js": "/jakethesnake/static/js/main.b0ad8473.chunk.js",
-    "main.js.map": "/jakethesnake/static/js/main.b0ad8473.chunk.js.map",
+    "main.js": "/jakethesnake/static/js/main.b1b2cee7.chunk.js",
+    "main.js.map": "/jakethesnake/static/js/main.b1b2cee7.chunk.js.map",
     "runtime-main.js": "/jakethesnake/static/js/runtime-main.1a38b9c9.js",
     "runtime-main.js.map": "/jakethesnake/static/js/runtime-main.1a38b9c9.js.map",
     "static/js/2.2a8ae0ed.chunk.js": "/jakethesnake/static/js/2.2a8ae0ed.chunk.js",
     "static/js/2.2a8ae0ed.chunk.js.map": "/jakethesnake/static/js/2.2a8ae0ed.chunk.js.map",
     "index.html": "/jakethesnake/index.html",
-    "precache-manifest.7e1cad5f8702125561ae7463163bf894.js": "/jakethesnake/precache-manifest.7e1cad5f8702125561ae7463163bf894.js",
+    "precache-manifest.9fc544cc2cb21f6017dc38cae62f4039.js": "/jakethesnake/precache-manifest.9fc544cc2cb21f6017dc38cae62f4039.js",
     "service-worker.js": "/jakethesnake/service-worker.js",
     "static/css/main.20a8ce4e.chunk.css.map": "/jakethesnake/static/css/main.20a8ce4e.chunk.css.map",
     "static/js/2.2a8ae0ed.chunk.js.LICENSE.txt": "/jakethesnake/static/js/2.2a8ae0ed.chunk.js.LICENSE.txt",
@@ -22,6 +22,6 @@
     "static/js/runtime-main.1a38b9c9.js",
     "static/js/2.2a8ae0ed.chunk.js",
     "static/css/main.20a8ce4e.chunk.css",
-    "static/js/main.b0ad8473.chunk.js"
+    "static/js/main.b1b2cee7.chunk.js"
   ]
 }
