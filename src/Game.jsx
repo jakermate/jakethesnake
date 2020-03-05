@@ -6,8 +6,10 @@ import ArrowControls from './ArrowControls'
 import FoodElement from './FoodElement'
 import BodySegment from './BodySegment'
 import ScoreView from './ScoreView.jsx'
-
+import GameOver from './GameOver'
+import styled, {keyframes} from 'styled-components'
 export default function Game(props) {
+    const [speed, setSpeed] = useState(100)
     const [direction, setDirection] = useState('down')
     const [snake, resetSnake] = useState(new Snake(props.width, props.height, props.blockSize))
     const [eaten, addEaten] = useState(0)
@@ -24,18 +26,51 @@ export default function Game(props) {
     const REF_FOODY = useRef(foody)
     REF_FOODY.current = foody
     const REF_EATEN = useRef(eaten)
+    const [gameOver, setGameOver] = useState(false)
     REF_EATEN.current = eaten
+    const REF_TAIL = useRef(tailState)
+    REF_TAIL.current = tailState
+    const REF_DIRECTION = useRef(direction)
+    REF_DIRECTION.current = direction
     useEffect(()=>{ 
         window.addEventListener('keydown', changeDirectionWithCode)
     },[])
     function changeDirection(target){
+        // makeFullscreen()
         let newDirection = target.dataset.direction
+        // if direction is backwards compared to current direction, ignore and return from function early
+        if(newDirection === 'up' && REF_DIRECTION.current === 'down'){
+            console.log('new = '+ newDirection + '||| current= '+REF_DIRECTION.current)
+            return
+        }
+        if(newDirection === 'down' && REF_DIRECTION.current === 'up'){
+            return
+        }
+        if(newDirection === 'left' && REF_DIRECTION.current === 'right'){
+            return
+        }
+        if(newDirection === 'right' && REF_DIRECTION.current === 'left'){
+            return
+        }
+        
         setDirection(newDirection)
         // console.log(newDirection)
     }
     function changeDirectionWithCode(event){
-        let direction = event.keyCode
-        switch(direction){
+        let newDirection = event.keyCode
+        if(newDirection === 38 && REF_DIRECTION.current === 'down'){
+            return
+        }
+        if(newDirection === 40 && REF_DIRECTION.current === 'up'){
+            return
+        }
+        if(newDirection === 37 && REF_DIRECTION.current === 'right'){
+            return
+        }
+        if(newDirection === 39 && REF_DIRECTION.current === 'left'){
+            return
+        }
+        switch(newDirection){
             case 38:
                 setDirection('up')
                 break
@@ -65,7 +100,19 @@ export default function Game(props) {
         runGame()
 
     },[])
-    function runGame(){
+    function makeFullscreen(){
+        document.documentElement.requestFullscreen()
+    }
+    function TIMOUT_FUNC(){
+        return new Promise((res,rej)=>{
+            setTimeout(()=>{
+                res('timeout complete')
+            },4000)
+        })
+    }
+    async function runGame(){
+        // makeFullscreen()
+        const timeoutFunc = await TIMOUT_FUNC()
         let counter = 0
         let tail = [{}]
         const loop = setInterval(function nextFrame(){
@@ -82,8 +129,8 @@ export default function Game(props) {
             setFrame(counter)
 
             checkIfEaten(REF_FOODX.current, REF_FOODY.current)
-            checkWallCollision(loop)
-        }, 300)
+            checkForCollisions(loop)
+        }, speed)
         function updateTail( lastCoordinates){
             tail.unshift(lastCoordinates)
             console.log(REF_EATEN.current)
@@ -99,10 +146,25 @@ export default function Game(props) {
             }
         }
         
-        function checkWallCollision(loop){
-            if(snake.x < 0 || snake.x >= props.width || snake.y < 0 || snake.y >= props.height){
-                console.log('Collision with wall.')
-                stopGame(loop)
+        function checkForCollisions(loop){
+
+            wallCollision()
+            tailCollision()
+
+            function tailCollision(){
+                let tail = REF_TAIL.current
+                tail.forEach((tailSeg, index)=>{
+                    if(snake.x == tailSeg.x && snake.y == tailSeg.y){
+                        stopGame(loop)
+                        
+                    }
+                })
+            }
+            function wallCollision(){
+                if(snake.x < 0 || snake.x >= props.width || snake.y < 0 || snake.y >= props.height){
+                    console.log('Collision with wall.')
+                    stopGame(loop)
+            }
             }
         }
         function growSnake(){
@@ -111,6 +173,7 @@ export default function Game(props) {
             addEaten(newEaten)
         }
         function stopGame(loop){
+            setGameOver(true)
             clearInterval(loop)
         }
     }
@@ -134,24 +197,54 @@ export default function Game(props) {
     
     
     return (
-        <div style={{display: `flex`, flexDirection:`column`,justifyContent:`space-around`,alignItems:`center`, height: `100%`}}>
-            <div id="game-elements" ref={gameElementsRef} style={{position:`relative`,width:`${props.width}px`, height:`calc(${props.height}px)`, margin: `0 auto`, border:'1px solid yellow', borderRadius: '4px'}}>
-                <SnakeHead frame={frame} x={posX} y={posY} snake={snake} blockSize={props.blockSize}></SnakeHead>
+        <GameView style={{paddingTop:`30px`,display: `flex`, flexDirection:`column`,justifyContent:`space-around`,alignItems:`center`, height: `100%`, position: `relative`, zIndex:`40`}}>
+            <div id="game-elements" ref={gameElementsRef} style={{position:`relative`,width:`${props.width}px`, height:`${props.height}px`, margin: `0 auto`, border:'1px solid white', background: 'black', borderRadius: '4px', overflow: `hidden`}}>
+                <SnakeHead  frame={frame} x={posX} y={posY} snake={snake} blockSize={props.blockSize} speed={speed}></SnakeHead>
                 <FoodElement frame={frame} left={foodx} top={foody} blockSize={props.blockSize}></FoodElement>
                 { // tail segments
                     tailState.map((content, index)=>{
                            return( 
-                           <div key={index} style={{position:`absolute`,width:`${props.blockSize}px`, height:`${props.blockSize}px`, background:`rgb(252, ${15+(index*10)}, ${3+(index*5)})`, top:`${content.y}px`, left:`${content.x}px`, color:`white`}}>
+                           <TailSegment key={index} style={{position:`absolute`,width:`${props.blockSize}px`, height:`${props.blockSize}px`, background:`rgb(252, ${15+(index*10)}, ${3+(index*5)})`, top:`${content.y}px`, left:`${content.x}px`, color:`white`}}>
                                
-                           </div>)
+                           </TailSegment>)
                         
                     })
                 }
+                {
+                    gameOver &&
+                    <GameOver eaten={eaten} blockSize={props.blockSize} width={props.width} height={props.height}></GameOver>
+                }
             </div>
-            <div style={{width: `${props.width}px`, margin:`0 auto`,display: 'flex', flexDirection:`column`,alignItems:`center`,height: '160px', position:'relative', boxSizing: 'border-box', padding: `10px`, borderRadius:`4px`, border:`1px solid cyan`}}>
-                <ArrowControls  direction={direction} changeDirection={changeDirection}></ArrowControls>
+            <div style={{width: `${props.width}px`, margin:`0 auto`,display: 'flex', flexDirection:`column`,alignItems:`center`,height: '160px', position:'relative', boxSizing: 'border-box', padding: `10px`, justifyContent:'space-between'}}>
                 <ScoreView eaten={REF_EATEN.current}></ScoreView>
+                <ArrowControls  direction={direction} changeDirection={changeDirection}></ArrowControls>
             </div>
-        </div>
+        </GameView>
     )
 }
+const fadein = keyframes`
+    from {
+        opacity: 0
+    }
+    to{
+        opacity: 1;
+    }
+`
+
+const GameView = styled.div`
+    animation-delay: 3s;
+    animation: 1s ${fadein} ease-in forwards;
+`
+const addSegment = keyframes`
+    from{
+        transform: scale(20);
+        opacity: 0;
+    }
+    to{
+        transform: scale(1);
+        opacity: 1;
+    }
+`
+const TailSegment = styled.div`
+    animation: 300ms ${addSegment} linear forwards;
+`
